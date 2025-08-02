@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 const PortfolioSection = () => {
   // State for video modals
@@ -9,32 +9,30 @@ const PortfolioSection = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [totalImages, setTotalImages] = useState(0);
   
-  // Refs for videos and intersection observer
+  // Refs for videos
   const video1Ref = useRef(null);
   const video2Ref = useRef(null);
-  const observerRef = useRef(null);
-  const sectionRef = useRef(null);
 
   // Portfolio Modal Functions
-  const openModal = useCallback((modalId) => {
+  const openModal = (modalId) => {
     setActiveModal(modalId);
     document.body.style.overflow = 'hidden';
     initializeImageCarousel(modalId);
-  }, []);
+  };
 
-  const closeModal = useCallback(() => {
+  const closeModal = () => {
     setActiveModal(null);
     document.body.style.overflow = 'auto';
     resetCarousel();
-  }, []);
+  };
 
-  // Video Modal Functions - Optimized
-  const openVideoModal = useCallback((modalNumber) => {
+  // Video Modal Functions
+  const openVideoModal = (modalNumber) => {
     setActiveVideoModal(modalNumber);
     document.body.style.overflow = 'hidden';
-  }, []);
+  };
 
-  const closeVideoModal = useCallback(() => {
+  const closeVideoModal = () => {
     setActiveVideoModal(null);
     document.body.style.overflow = 'auto';
     
@@ -47,33 +45,34 @@ const PortfolioSection = () => {
       video2Ref.current.pause();
       video2Ref.current.currentTime = 0;
     }
-  }, []);
+  };
 
   // Image Carousel Functions
-  const initializeImageCarousel = useCallback((modalId) => {
+  const initializeImageCarousel = (modalId) => {
     setCurrentImageIndex(0);
     setTotalImages(1);
-  }, []);
+  };
 
-  const changeImage = useCallback((direction) => {
-    setCurrentImageIndex(prev => {
-      const newIndex = prev + direction;
-      return newIndex >= 0 && newIndex < totalImages ? newIndex : prev;
-    });
-  }, [totalImages]);
+  const changeImage = (direction) => {
+    const newIndex = currentImageIndex + direction;
+    if (newIndex >= 0 && newIndex < totalImages) {
+      setCurrentImageIndex(newIndex);
+    }
+  };
 
-  const resetCarousel = useCallback(() => {
+  const resetCarousel = () => {
     setCurrentImageIndex(0);
     setTotalImages(0);
-  }, []);
+  };
 
-  // Optimized Keyboard Navigation
+  // Effect for keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') {
         if (activeVideoModal) {
           closeVideoModal();
-        } else if (activeModal) {
+        }
+        if (activeModal) {
           closeModal();
         }
       }
@@ -89,41 +88,32 @@ const PortfolioSection = () => {
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [activeVideoModal, activeModal, totalImages, closeVideoModal, closeModal, changeImage]);
+  }, [activeVideoModal, activeModal, totalImages, currentImageIndex]);
 
-  // Optimized Intersection Observer
+  // Effect for intersection observer (scroll animation)
   useEffect(() => {
-    // Throttled scroll animation
     const observerOptions = {
       threshold: 0.1,
       rootMargin: '0px 0px -50px 0px'
     };
 
-    observerRef.current = new IntersectionObserver((entries) => {
-      // Use requestAnimationFrame for smooth animations
-      requestAnimationFrame(() => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('animate-in');
-            // Unobserve after animation to improve performance
-            observerRef.current?.unobserve(entry.target);
-          }
-        });
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.style.animationPlayState = 'running';
+        }
       });
     }, observerOptions);
 
-    // Observe only when section is visible
     const projectCards = document.querySelectorAll('.project-card');
     projectCards.forEach(card => {
-      observerRef.current?.observe(card);
+      observer.observe(card);
     });
 
     return () => {
-      if (observerRef.current) {
-        projectCards.forEach(card => {
-          observerRef.current?.unobserve(card);
-        });
-      }
+      projectCards.forEach(card => {
+        observer.unobserve(card);
+      });
     };
   }, []);
 
@@ -135,6 +125,7 @@ const PortfolioSection = () => {
       title: "Payroll Management System",
       description: "A comprehensive Java-based solution for managing employee records and salary calculations, supporting both full-time and part-time employees with dynamic calculations.",
       tags: ["Java", "Java-FX", "UI Design", "Object Oriented Programming"],
+      // Manual button configuration - you can customize these buttons
       buttons: [
         {
           text: "Watch Demo",
@@ -155,6 +146,7 @@ const PortfolioSection = () => {
       title: "Expression conversion",
       description: "A comprehensive Java-based solution for managing employee records and salary calculations, supporting both full-time and part-time employees with dynamic calculations.",
       tags: ["Java", "Java-FX", "UI Design", "DSA"],
+      // Custom buttons configuration
       buttons: [
         {
           text: "Watch Demo",
@@ -175,6 +167,7 @@ const PortfolioSection = () => {
       title: "Client's Portfolio Website",
       description: "A modern, fully responsive portfolio website featuring clean design, client testimonials, and optimized performance for professional online presence.",
       tags: ["HTML", "CSS", "JavaScript", "Responsive"],
+      // Single button example
       buttons: []
     },
     {
@@ -184,6 +177,7 @@ const PortfolioSection = () => {
       title: "Food Ordering Platform",
       description: "A complete food ordering system with user-friendly interface, cart management, and seamless ordering process for restaurants.",
       tags: ["HTML", "CSS", "JavaScript", "React", "Payment Integration"],
+      // Multiple buttons with different actions
       buttons: [
         {
           text: "Soon Will be live",
@@ -199,6 +193,7 @@ const PortfolioSection = () => {
       title: "Online Store Management",
       description: "Comprehensive e-commerce store management including inventory control, order processing, and customer relationship management.",
       tags: ["Shopify", "WooCommerce", "Analytics", "SEO"],
+      // Custom button names
       buttons: []
     },
     {
@@ -208,6 +203,7 @@ const PortfolioSection = () => {
       title: "Business Process Automation",
       description: "Streamlined business operations through automated processes, administrative support, and efficient workflow management.",
       tags: ["Automation", "CRM", "Data Entry", "Admin Support"],
+      // No buttons example - empty array means no buttons will show
       buttons: []
     },
     {
@@ -217,6 +213,7 @@ const PortfolioSection = () => {
       title: "Calculator Web Application",
       description: "Tailored web application with advanced features, user authentication, and database integration for specific business requirements.",
       tags: ["HTML", "CSS", "JavaScript"],
+      // Live link and code buttons
       buttons: [
         {
           text: "View Live",
@@ -234,7 +231,7 @@ const PortfolioSection = () => {
 
   return (
     <>
-      <section className="portfolio-section" id="portfolio-section" ref={sectionRef}>
+      <section className="portfolio-section" id="portfolio-section">
         <div className="floating-elements">
           <div className="floating-element"></div>
           <div className="floating-element"></div>
@@ -258,6 +255,7 @@ const PortfolioSection = () => {
                 key={project.id} 
                 className="project-card"
                 onClick={() => {
+                  // Check if there's a modal button and handle click
                   const modalButton = project.buttons.find(btn => btn.type === 'modal');
                   if (modalButton) {
                     openModal(modalButton.modalId);
@@ -268,14 +266,9 @@ const PortfolioSection = () => {
                 }}
               >
                 <div className="project-image">
-                  {/* Lazy loading for images */}
-                  <img 
-                    src={project.image} 
-                    alt={project.title}
-                    loading="lazy"
-                    decoding="async"
-                  />
+                  <img src={project.image} alt={project.title} />
                   <div className="project-overlay">
+                    {/* Render buttons based on manual configuration */}
                     {project.buttons.map((button, index) => (
                       <React.Fragment key={index}>
                         {button.type === 'video' && (
@@ -334,7 +327,7 @@ const PortfolioSection = () => {
         </div>
       </section>
 
-      {/* Optimized Video Modal 1 */}
+      {/* Video Modal 1 */}
       {activeVideoModal === 1 && (
         <div 
           className="video-modal show" 
@@ -353,8 +346,6 @@ const PortfolioSection = () => {
               <video 
                 ref={video1Ref}
                 controls
-                preload="none"
-                poster="/assets/projects-banners/payroll.jpeg"
                 onClick={(e) => e.stopPropagation()}
               >
                 <source src="/assets/videos/Payroll-Management-System.mp4" type="video/mp4" />
@@ -365,7 +356,7 @@ const PortfolioSection = () => {
         </div>
       )}
 
-      {/* Optimized Video Modal 2 */}
+      {/* Video Modal 2 */}
       {activeVideoModal === 2 && (
         <div 
           className="video-modal show" 
@@ -384,8 +375,6 @@ const PortfolioSection = () => {
               <video 
                 ref={video2Ref}
                 controls
-                preload="none"
-                poster="/assets/projects-banners/expresion.png"
                 onClick={(e) => e.stopPropagation()}
               >
                 <source src="/assets/videos/infix-to-postfix-converter.mp4" type="video/mp4" />
