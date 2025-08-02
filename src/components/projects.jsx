@@ -181,8 +181,8 @@ const PortfolioSection = () => {
       buttons: [
         {
           text: "Soon Will be live",
-          type: "modal",
-          modalId: "modal3"
+          type: "link",
+        
         }
       ]
     },

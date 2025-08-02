@@ -420,20 +420,7 @@ const PortfolioJavaScript = () => {
 
   return (
     <>
-   {/* Go To Top Button - Matching your original HTML structure */}
-      {showBackToTop && (
-        <div id="go-top">
-          <a 
-            className="smoothscroll" 
-            title="Back to Top" 
-            href="#top"
-            onClick={scrollToTop}
-            style={{ cursor: 'pointer' }}
-          >
-            <i className="fas fa-long-arrow-alt-up"></i>
-          </a>
-        </div>
-      )}
+  
       {/* Thank You Popup */}
       {showThankYou && (
         <div 
